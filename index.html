@@ -539,7 +539,6 @@
                     <span class="material-symbols-outlined" style="vertical-align: middle;">verified_user</span>
                     Hacer Administrador
                 </button>
-
                 <button class="btn-peligro" style="width: 100%; justify-content: center;" onclick="vetarUsuarioActual()">
                     <span class="material-symbols-outlined">person_off</span>
                     Vetar Usuario Definitivamente
@@ -988,47 +987,47 @@
         }
 
         async function abrirPanelUsuario(id, correo) {
-    usuarioAdminSeleccionadoId = id;
-    const titulo = document.getElementById('admin-modal-nombre');
-    const contenedor = document.getElementById('admin-lista-contenido');
+            usuarioAdminSeleccionadoId = id;
+            
+            // 1. Cambiamos el título y limpiamos el contenido
+            document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + correo;
+            document.getElementById('admin-lista-contenido').innerHTML = '<p>Cargando contenido...</p>';
+            
+            // 2. Abrimos el modal visualmente
+            abrirModal('modal-admin-usuario');
 
-    if (!titulo || !contenedor) return;
+            try {
+                // 3. Pedimos los comentarios al servidor
+                const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
+                const comentarios = await res.json();
+                
+                const contenedor = document.getElementById('admin-lista-contenido');
+                contenedor.innerHTML = ''; // Borramos el "Cargando..."
 
-    // Limpiamos el contenido anterior antes de abrir
-    titulo.innerText = "Gestionar: " + correo;
-    contenedor.innerHTML = '<p>Cargando contenido...</p>';
-    
-    abrirModal('modal-admin-usuario');
+                if (comentarios.length === 0) {
+                    contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
+                    return;
+                }
 
-    try {
-        const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
-        const comentarios = await res.json();
-        contenedor.innerHTML = '';
-
-        if(comentarios.length === 0) {
-            contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
-            return;
+                comentarios.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'admin-content-card';
+                    div.innerHTML = `
+                        <div style="flex:1">
+                            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
+                            "${c.texto.substring(0, 40)}..."
+                        </div>
+                        <button class="btn-icon" title="Borrar" style="color: var(--rojo-peligro);" onclick="borrarComentarioAdmin(${c.id})">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (error) { 
+                console.error("Error al cargar contenido:", error);
+                document.getElementById('admin-lista-contenido').innerHTML = '<p>Error al conectar con el servidor.</p>';
+            }
         }
-
-        comentarios.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'admin-content-card';
-            div.innerHTML = `
-                <div>
-                    <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
-                    "${c.texto.substring(0, 30)}..."
-                </div>
-                <button class="btn-icon" title="Borrar comentario" style="color: var(--rojo-peligro); font-size: 1.2rem;" onclick="borrarComentarioAdmin(${c.id})">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
-            `;
-            contenedor.appendChild(div);
-        });
-    } catch (error) { 
-        console.error(error);
-        contenedor.innerHTML = '<p>Error al cargar el contenido.</p>';
-    }
-}
 
         async function borrarComentarioAdmin(comentarioId) {
             if(!confirm("¿Seguro que quieres borrar este comentario?")) return;
