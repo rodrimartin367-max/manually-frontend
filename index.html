@@ -1082,6 +1082,23 @@
             } catch (e) { console.error(e); }
         }
 
+        // --- FUNCIONES ESENCIALES PARA MODALES ---
+function abrirModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.add('active');
+    } else {
+        console.error("No se encontró el modal con ID: " + id);
+    }
+}
+
+function cerrarModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
         // Ejecutar al cargar la página
         window.onload = () => {
             cargarProductosDestacados();
