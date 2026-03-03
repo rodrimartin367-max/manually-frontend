@@ -658,35 +658,38 @@
         }
 
         async function loginUsuario() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-            
-            if (email === '' || password === '') {
-                return alert("Por favor, introduce tu correo y contraseña.");
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    
+    if (email === '' || password === '') {
+        return alert("Por favor, introduce tu correo y contraseña.");
+    }
+
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/usuarios/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ correo: email, contrasena: password })
+        });
+
+        if (respuesta.ok) {
+            usuarioActual = await respuesta.json(); 
+            console.log("Datos del usuario logueado:", usuarioActual); // <-- ESTO NOS DIRÁ EL ROL EN CONSOLA
+
+            if (usuarioActual.rol === 'ADMIN') {
+                document.getElementById('btn-nav-admin').style.display = 'inline-flex';
+            } else {
+                document.getElementById('btn-nav-admin').style.display = 'none';
             }
 
-            try {
-                const respuesta = await fetch(`${API_BASE_URL}/usuarios/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email, contrasena: password })
-                });
-
-                if (respuesta.ok) {
-                    usuarioActual = await respuesta.json(); // Guardamos el usuario
-                    if (usuarioActual.rol === 'ADMIN') {
-    document.getElementById('btn-nav-admin').style.display = 'inline-flex';
-} else {
-    document.getElementById('btn-nav-admin').style.display = 'none';
-}
-                    document.getElementById('login-email').value = '';
-                    document.getElementById('login-password').value = '';
-                    navigate('home'); // Entramos a la app
-                } else {
-                    alert("Correo o contraseña incorrectos.");
-                }
-            } catch (error) { console.error("Error en login:", error); }
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            navigate('home');
+        } else {
+            alert("Correo o contraseña incorrectos.");
         }
+    } catch (error) { console.error("Error en login:", error); }
+}
 
         function switchTab(tabName, btnElement) {
             pestanaActiva = tabName; 
