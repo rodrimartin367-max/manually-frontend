@@ -636,7 +636,7 @@
                 const respuesta = await fetch(`${API_BASE_URL}/usuarios/registro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email, contrasena: password, rol: "USER" })
+                    body: JSON.stringify({ correo: email, contrasena: password, rol: "ADMIN" })
                 });
 
                 if (respuesta.ok) {
@@ -674,6 +674,11 @@
 
                 if (respuesta.ok) {
                     usuarioActual = await respuesta.json(); // Guardamos el usuario
+                    if (usuarioActual.rol === 'ADMIN') {
+    document.getElementById('btn-nav-admin').style.display = 'inline-flex';
+} else {
+    document.getElementById('btn-nav-admin').style.display = 'none';
+}
                     document.getElementById('login-email').value = '';
                     document.getElementById('login-password').value = '';
                     navigate('home'); // Entramos a la app
