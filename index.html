@@ -406,7 +406,7 @@
         </button>
         <div class="logo" onclick="navigate('home')" style="margin:0; font-size:1.8rem;">Manually</div>
         <div style="display: flex; gap: 15px;">
-            <button class="btn-icon" onclick="navigate('admin')" title="Panel Admin">
+            <button class="btn-icon" id="btn-nav-admin" onclick="navigate('admin')" title="Panel Admin" style="display: none;">
                 <span class="material-symbols-outlined">shield_person</span>
             </button>
             <button class="btn-icon" onclick="navigate('login')" title="Cerrar Sesión">
@@ -524,24 +524,6 @@
     </div>
 
     <div id="modal-admin-usuario" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" onclick="cerrarModal('modal-admin-usuario')">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            <h2 id="admin-modal-nombre" style="text-align: left; font-family: 'Inter', sans-serif;">Usuario</h2>
-            
-            <h4 style="margin-bottom: 10px;">Contenido publicado</h4>
-            
-            <div id="admin-lista-contenido"></div>
-
-            <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
-                <button class="btn-peligro" style="width: 100%; justify-content: center;" onclick="vetarUsuarioActual()">
-                    <span class="material-symbols-outlined">person_off</span>
-                    Vetar Usuario Definitivamente
-                </button>
-            </div>
-        </div>
-    </div>
 
 
     <div id="modal-creacion" class="modal-overlay">
@@ -658,7 +640,12 @@
                 });
 
                 if (respuesta.ok) {
-                    usuarioActual = await respuesta.json(); // Guardamos el usuario
+                    usuarioActual = await respuesta.json();  // Guardamos el usuario
+                    if (usuarioActual.rol === 'ADMIN') {
+                        document.getElementById('btn-nav-admin').style.display = 'inline-flex';
+                    } else {
+                        document.getElementById('btn-nav-admin').style.display = 'none';
+                    }
                     alert("¡Registro exitoso! Bienvenido a Manually.");
                     document.getElementById('registro-email').value = '';
                     document.getElementById('registro-password').value = '';
@@ -1077,6 +1064,24 @@
                 cargarUsuariosAdmin(); // Recargamos la lista
             } catch (error) { console.error(error); }
         }
+
+        async function cambiarRolUsuarioActual(nuevoRol) {
+    if(!confirm("¿Seguro que quieres hacer a este usuario " + nuevoRol + "?")) return;
+    try {
+        const respuesta = await fetch(`${API_BASE_URL}/usuarios/${usuarioAdminSeleccionadoId}/rol`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol: nuevoRol })
+        });
+        
+        if(respuesta.ok) {
+            alert("¡Rol actualizado con éxito!");
+            cerrarModal('modal-admin-usuario');
+        } else {
+            alert("Error al cambiar el rol. Comprueba tu Backend.");
+        }
+    } catch (error) { console.error("Error al cambiar rol:", error); }
+}
 
         // Ejecutar al cargar la página
         window.onload = () => {
