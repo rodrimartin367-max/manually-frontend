@@ -524,36 +524,6 @@
     </div>
 
     <div id="modal-admin-usuario" class="modal-overlay">
-
-
-    <div id="modal-creacion" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" onclick="cerrarModal('modal-creacion')">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            <h2 id="modal-creacion-titulo" style="text-align: left; font-family: 'Inter', sans-serif;">Añadir</h2>
-            
-            <div id="modal-body-videos" style="display: none;">
-                <input type="text" id="nuevo-video-titulo" class="input-amarillo" placeholder="Título del video">
-                <input type="url" id="nuevo-video-url" class="input-amarillo" placeholder="Enlace de YouTube (URL)">
-                <button class="btn-azul" onclick="publicarVideo()">Subir Video</button>
-            </div>
-
-            <div id="modal-body-foro" style="display: none;">
-                <textarea id="nuevo-comentario" class="input-amarillo" rows="4" placeholder="Escribe tu duda o comentario..."></textarea>
-                <button class="btn-azul" onclick="publicarComentario()">Publicar en el Foro</button>
-            </div>
-
-            <div id="modal-body-piezas" style="display: none;">
-                <input type="text" id="nueva-pieza-nombre" class="input-amarillo" placeholder="Nombre de la pieza">
-                <input type="number" id="nueva-pieza-precio" class="input-amarillo" placeholder="Precio (€)">
-                <input type="url" id="nueva-pieza-url" class="input-amarillo" placeholder="Enlace de compra">
-                <button class="btn-azul" onclick="publicarPieza()">Añadir Pieza</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-admin-usuario" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="cerrarModal('modal-admin-usuario')">
                 <span class="material-symbols-outlined">close</span>
@@ -1021,39 +991,49 @@
         }
 
         async function abrirPanelUsuario(id, correo) {
-            usuarioAdminSeleccionadoId = id;
-            document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + correo;
-            abrirModal('modal-admin-usuario');
-            
-            const contenedor = document.getElementById('admin-lista-contenido');
-            contenedor.innerHTML = '<p>Cargando contenido...</p>';
+    usuarioAdminSeleccionadoId = id;
+    
+    // Buscamos los elementos
+    const titulo = document.getElementById('admin-modal-nombre');
+    const contenedor = document.getElementById('admin-lista-contenido');
 
-            try {
-                const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
-                const comentarios = await res.json();
-                contenedor.innerHTML = '';
+    // Si alguno no existe, paramos para que no de error
+    if (!titulo || !contenedor) return;
 
-                if(comentarios.length === 0) {
-                    contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
-                    return;
-                }
+    titulo.innerText = "Gestionar: " + correo;
+    abrirModal('modal-admin-usuario');
+    
+    contenedor.innerHTML = '<p>Cargando contenido...</p>';
 
-                comentarios.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'admin-content-card';
-                    div.innerHTML = `
-                        <div>
-                            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
-                            "${c.texto.substring(0, 30)}..."
-                        </div>
-                        <button class="btn-icon" title="Borrar comentario" style="color: var(--rojo-peligro); font-size: 1.2rem;" onclick="borrarComentarioAdmin(${c.id})">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    `;
-                    contenedor.appendChild(div);
-                });
-            } catch (error) { console.error(error); }
+    try {
+        const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
+        const comentarios = await res.json();
+        contenedor.innerHTML = '';
+
+        if(comentarios.length === 0) {
+            contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
+            return;
         }
+
+        comentarios.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'admin-content-card';
+            div.innerHTML = `
+                <div>
+                    <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
+                    "${c.texto.substring(0, 30)}..."
+                </div>
+                <button class="btn-icon" title="Borrar comentario" style="color: var(--rojo-peligro); font-size: 1.2rem;" onclick="borrarComentarioAdmin(${c.id})">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) { 
+        console.error(error);
+        contenedor.innerHTML = '<p>Error al cargar el contenido.</p>';
+    }
+}
 
         async function borrarComentarioAdmin(comentarioId) {
             if(!confirm("¿Seguro que quieres borrar este comentario?")) return;
