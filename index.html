@@ -547,6 +547,33 @@
         </div>
     </div>
 
+    <div id="modal-creacion" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-creacion')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="modal-creacion-titulo" style="text-align: left; font-family: 'Inter', sans-serif;">Añadir</h2>
+            
+            <div id="modal-body-videos" style="display: none;">
+                <input type="text" id="nuevo-video-titulo" class="input-amarillo" placeholder="Título del video">
+                <input type="url" id="nuevo-video-url" class="input-amarillo" placeholder="Enlace de YouTube (URL)">
+                <button class="btn-azul" onclick="publicarVideo()">Subir Video</button>
+            </div>
+
+            <div id="modal-body-foro" style="display: none;">
+                <textarea id="nuevo-comentario" class="input-amarillo" rows="4" placeholder="Escribe tu duda o comentario..."></textarea>
+                <button class="btn-azul" onclick="publicarComentario()">Publicar en el Foro</button>
+            </div>
+
+            <div id="modal-body-piezas" style="display: none;">
+                <input type="text" id="nueva-pieza-nombre" class="input-amarillo" placeholder="Nombre de la pieza">
+                <input type="number" id="nueva-pieza-precio" class="input-amarillo" placeholder="Precio (€)">
+                <input type="url" id="nueva-pieza-url" class="input-amarillo" placeholder="Enlace de compra">
+                <button class="btn-azul" onclick="publicarPieza()">Añadir Pieza</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = 'https://manuallt-backend.onrender.com/api';
         let productoSeleccionadoId = null;
@@ -658,42 +685,36 @@
 }
 
         function switchTab(tabName, btnElement) {
-    pestanaActiva = tabName; // <--- ESTO ES VITAL
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    
-    btnElement.classList.add('active');
-    document.getElementById('tab-' + tabName).classList.add('active');
-}
-
-        // --- CONTROL DE MODALES ---
-        function abrirModal(id) { document.getElementById(id).classList.add('active'); }
-        function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
+            pestanaActiva = tabName; // Actualiza la variable global
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            btnElement.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
 
         function abrirModalCreacion() {
-    if (!productoSeleccionadoId) {
-        return alert("Error: No se ha detectado el producto.");
-    }
+            if (!productoSeleccionadoId) return alert("Selecciona un producto primero");
 
-    // Limpiamos formularios previos
-    document.getElementById('modal-body-videos').style.display = 'none';
-    document.getElementById('modal-body-foro').style.display = 'none';
-    document.getElementById('modal-body-piezas').style.display = 'none';
+            // Ocultar todos los cuerpos primero
+            document.getElementById('modal-body-videos').style.display = 'none';
+            document.getElementById('modal-body-foro').style.display = 'none';
+            document.getElementById('modal-body-piezas').style.display = 'none';
 
-    const titulo = document.getElementById('modal-creacion-titulo');
+            const titulo = document.getElementById('modal-creacion-titulo');
 
-    if (pestanaActiva === 'videos') {
-        titulo.innerText = 'Subir Nuevo Video';
-        document.getElementById('modal-body-videos').style.display = 'block';
-    } else if (pestanaActiva === 'foro') {
-        titulo.innerText = 'Añadir Comentario';
-        document.getElementById('modal-body-foro').style.display = 'block';
-    } else if (pestanaActiva === 'piezas') {
-        titulo.innerText = 'Añadir Nueva Pieza';
-        document.getElementById('modal-body-piezas').style.display = 'block';
-    }
-    abrirModal('modal-creacion');
-}
+            if(pestanaActiva === 'videos') {
+                titulo.innerText = 'Subir Nuevo Video';
+                document.getElementById('modal-body-videos').style.display = 'block';
+            } else if(pestanaActiva === 'foro') {
+                titulo.innerText = 'Añadir Comentario';
+                document.getElementById('modal-body-foro').style.display = 'block';
+            } else if(pestanaActiva === 'piezas') {
+                titulo.innerText = 'Añadir Nueva Pieza';
+                document.getElementById('modal-body-piezas').style.display = 'block';
+            }
+            abrirModal('modal-creacion');
+        }
 
         function abrirModalAdminUsuario(nombreUsuario) {
             document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + nombreUsuario;
