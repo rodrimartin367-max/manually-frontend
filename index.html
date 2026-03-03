@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manually</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet" />
+    
+<style>
+        /* --- Paleta de Colores y Variables --- */
+        :root {
+            --bg-crema: #F6F4EB;
+            --azul-oscuro: #3A4D7B;
+            --azul-claro: #8CA3C9;
+            --azul-boton: #6C84B4;
+            --amarillo-input: #FDF9E0;
+            --texto-oscuro: #1A1A1A;
+            --rojo-peligro: #D9534F;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-crema);
+            color: var(--texto-oscuro);
+            overflow-x: hidden; /* Evita scroll horizontal en móviles */
+        }
+
+        h1, h2, .logo {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin: 2vh 0; /* vh = porcentaje de la altura de la pantalla */
+            cursor: pointer;
+        }
+
+        /* --- Iconos --- */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* --- Contenedores Generales --- */
+        .view {
+            display: none;
+            padding: 4%; /* Porcentaje para que respire en los bordes */
+            width: 90%;
+            max-width: 75rem; /* Equivalente a 1200px pero relativo */
+            margin: 0 auto;
+        }
+        
+        .view.active { display: block; }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2% 5%;
+            background-color: var(--bg-crema);
+            border-bottom: 1px solid var(--azul-claro);
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--azul-oscuro);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover { color: var(--azul-claro); }
+
+        /* --- Componentes UI --- */
+        .input-amarillo {
+            background-color: var(--amarillo-input);
+            border: 1px solid var(--azul-claro);
+            padding: 0.8rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+            border-radius: 0.4rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn-azul {
+            background-color: var(--azul-boton);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 0.4rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-azul:hover { background-color: var(--azul-oscuro); }
+
+        /* --- Pantalla de Inicio (Hero) y Formularios --- */
+        #login.view.active.fondo-azul-total { display: flex; }
+
+        .fondo-azul-total {
+            background-color: var(--azul-oscuro);
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            max-width: none;
+            width: 100%;
+            padding: 0;
+        }
+
+        .login-center-content {
+            text-align: center;
+            width: 90%; /* Se adapta al móvil */
+            max-width: 25rem;
+            padding: 2rem;
+        }
+
+        .logo-gigante {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 4.5rem); /* Se encoge solo si la pantalla es enana */
+            color: var(--bg-crema);
+            margin-top: 0;
+            margin-bottom: 2.5rem;
+        }
+
+        .botones-auth {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-crema {
+            background-color: var(--bg-crema);
+            color: var(--azul-oscuro);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-crema:hover { background-color: var(--amarillo-input); }
+
+        .btn-texto {
+            background: none;
+            border: none;
+            color: var(--bg-crema);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- Vistas Internas --- */
+        .search-container {
+            width: 60%; /* En PC ocupa el 60% */
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+        
+        .search-container .material-symbols-outlined {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--azul-oscuro);
+        }
+
+        .search-container input {
+            padding-left: 2.8rem;
+            margin: 0;
+        }
+        
+        .grid-categorias {
+            display: grid;
+            /* El grid automático ya era responsive, lo pasamos a rem */
+            grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .cat-item {
+            background-color: var(--azul-claro);
+            padding: 1.2rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            border: 1px solid var(--azul-oscuro);
+            cursor: pointer;
+            transition: transform 0.2s;
+            color: white;
+            font-weight: 600;
+        }
+
+        .cat-item:hover { transform: translateY(-3px); }
+
+        /* --- Producto Detalle --- */
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .product-img-placeholder {
+            width: 6rem;
+            height: 6rem;
+            background-color: white;
+            border: 1px solid var(--azul-claro);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--azul-claro);
+            flex-shrink: 0; /* Para que la imagen no se aplaste en móviles */
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap; /* Si no caben, bajan a la siguiente línea */
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid var(--azul-claro);
+            padding-bottom: 0.6rem;
+            align-items: center;
+        }
+
+        .tab-btn {
+            background-color: transparent;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--azul-claro);
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            color: var(--azul-oscuro);
+            border-bottom: 3px solid var(--azul-oscuro);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 5%;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .tab-content.active { display: block; }
+
+        .comentario {
+            background-color: var(--amarillo-input);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #E5E0C8;
+        }
+
+        .comentario-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.3rem;
+            color: var(--azul-oscuro);
+        }
+
+        /* --- Panel Admin --- */
+        .admin-list {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 5%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .admin-item {
+            padding: 1rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .admin-item:hover { background-color: var(--bg-crema); }
+        .admin-item:last-child { border-bottom: none; }
+
+        /* --- MODALES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 5%; /* Evita que choque con los bordes */
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background-color: white;
+            padding: 8%;
+            border-radius: 0.8rem;
+            width: 100%;
+            max-width: 30rem;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--azul-oscuro);
+        }
+
+        .admin-content-card {
+            background: var(--bg-crema);
+            padding: 1rem;
+            border-radius: 0.4rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Permite que el botón baje si no cabe */
+            gap: 10px;
+        }
+
+        .btn-peligro {
+            background-color: var(--rojo-peligro);
+            color: white;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* =========================================
+           MAGIA RESPONSIVE (MÓVILES Y TABLETS) 
+           ========================================= */
+        @media (max-width: 768px) {
+            .search-container {
+                width: 100%; /* El buscador ocupa todo el ancho en móviles */
+            }
+
+            .navbar {
+                padding: 4% 5%;
+            }
+
+            .logo {
+                font-size: 2rem; /* Letra un poco más pequeña en navbar */
+            }
+
+            .product-header {
+                flex-direction: column; /* Pone la imagen arriba y el título debajo */
+                text-align: center;
+            }
+
+            .tab-btn {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.8rem;
+            }
+            
+            .admin-item {
+                flex-direction: column; /* En móvil, la lista del admin se apila */
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="main-nav" style="display: none;">
+        <button class="btn-icon" onclick="navigate('home')" title="Inicio">
+            <span class="material-symbols-outlined">home</span>
+        </button>
+        <div class="logo" onclick="navigate('home')" style="margin:0; font-size:1.8rem;">Manually</div>
+        <div style="display: flex; gap: 15px;">
+            <button class="btn-icon" onclick="navigate('admin')" title="Panel Admin">
+                <span class="material-symbols-outlined">shield_person</span>
+            </button>
+            <button class="btn-icon" onclick="navigate('login')" title="Cerrar Sesión">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="login" class="view active fondo-azul-total">
+        <div class="login-center-content" id="auth-opciones">
+            <h1 class="logo-gigante">Manually</h1>
+            <div class="botones-auth">
+                <button class="btn-crema" onclick="mostrarFormulario('registro')">Registrarse</button>
+                <button class="btn-crema" onclick="mostrarFormulario('login')">Iniciar sesión</button>
+            </div>
+        </div>
+
+        <div class="login-center-content" id="form-registro" style="display: none;">
+            <h2 style="color: white; margin-bottom: 30px;">Crear cuenta</h2>
+            <input type="email" id="registro-email" class="input-amarillo" placeholder="Correo electrónico">
+            <input type="password" id="registro-password" class="input-amarillo" placeholder="Contraseña">
+            <div class="botones-auth">
+                <button class="btn-crema" onclick="registrarUsuario()">Registrarse</button>
+                <button class="btn-texto" onclick="mostrarFormulario('opciones')">Volver</button>
+            </div>
+        </div>
+
+        <div class="login-center-content" id="form-login" style="display: none;">
+            <h2 style="color: white; margin-bottom: 30px;">Bienvenido de nuevo</h2>
+            <input type="email" id="login-email" class="input-amarillo" placeholder="Correo electrónico">
+            <input type="password" id="login-password" class="input-amarillo" placeholder="Contraseña">
+            <div class="botones-auth">
+                <button class="btn-crema" onclick="loginUsuario()">Iniciar sesión</button>
+                <button class="btn-texto" onclick="mostrarFormulario('opciones')">Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="home" class="view">
+        <div class="search-container">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="input-busqueda-home" class="input-amarillo" placeholder="Buscar modelo, marca o dispositivo..." onkeypress="ejecutarBusqueda(event)">
+        </div>
+        
+        <div class="grid-categorias">
+            <div class="cat-item" onclick="navigate('resultados')">Electro</div>
+            <div class="cat-item" onclick="navigate('resultados')">Móviles</div>
+            <div class="cat-item" onclick="navigate('resultados')">Audio</div>
+            <div class="cat-item" onclick="navigate('resultados')">Portátiles</div>
+            <div class="cat-item" onclick="navigate('resultados')">Juegos</div>
+            <div class="cat-item" onclick="navigate('resultados')">Otros</div>
+        </div>
+
+        <h2 style="text-align: left; font-family: 'Inter', sans-serif;">Productos Destacados</h2>
+        <div class="grid-categorias" id="grid-productos-destacados">
+            <p>Cargando productos...</p>
+        </div>
+    </div>
+
+    <div id="resultados" class="view">
+        <button class="btn-icon" onclick="navigate('home')" style="font-size: 1rem; margin-bottom: 20px;">
+            <span class="material-symbols-outlined">arrow_back</span> Atrás
+        </button>
+        <div class="search-container">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="input-busqueda-resultados" class="input-amarillo" placeholder="Buscar..." onkeypress="ejecutarBusqueda(event)">
+        </div>
+        <h2 id="titulo-resultados" style="text-align: left; font-family: 'Inter', sans-serif;">Resultados de búsqueda</h2>
+        <div class="grid-categorias" id="grid-resultados"></div>
+    </div>
+
+    <div id="producto" class="view">
+        <button class="btn-icon" onclick="navigate('home')" style="font-size: 1rem; margin-bottom: 20px;">
+            <span class="material-symbols-outlined">arrow_back</span> Volver
+        </button>
+        
+        <div class="product-header">
+            <div class="product-img-placeholder">
+                <span class="material-symbols-outlined" style="font-size: 3rem;">smartphone</span>
+            </div>
+            <h2 id="titulo-producto" style="margin: 0;">Cargando...</h2>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-target="videos" onclick="switchTab('videos', this)">Videos</button>
+            <button class="tab-btn" data-target="foro" onclick="switchTab('foro', this)">Foro</button>
+            <button class="tab-btn" data-target="piezas" onclick="switchTab('piezas', this)">Piezas</button>
+            <button class="btn-icon" style="margin-left: auto; color: var(--azul-boton);" onclick="abrirModalCreacion()">
+                <span class="material-symbols-outlined">add_circle</span>
+            </button>
+        </div>
+
+        <div id="tab-videos" class="tab-content active">
+            <div id="lista-videos"></div>
+        </div>
+
+        <div id="tab-foro" class="tab-content">
+            <div id="lista-comentarios"></div>
+        </div>
+
+        <div id="tab-piezas" class="tab-content">
+            <div class="grid-categorias" id="lista-piezas"></div>
+        </div>
+    </div>
+
+    <div id="admin" class="view">
+        <button class="btn-icon" onclick="navigate('home')" style="font-size: 1rem; margin-bottom: 20px;">
+            <span class="material-symbols-outlined">arrow_back</span> Volver
+        </button>
+        <h2 style="text-align: left; font-family: 'Inter', sans-serif;">Gestión de Usuarios</h2>
+        
+        <div class="admin-list" id="lista-usuarios-admin">
+            <p style="padding: 15px;">Cargando usuarios...</p>
+        </div>
+    </div>
+
+    <div id="modal-admin-usuario" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-admin-usuario')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="admin-modal-nombre" style="text-align: left; font-family: 'Inter', sans-serif;">Usuario</h2>
+            
+            <h4 style="margin-bottom: 10px;">Contenido publicado</h4>
+            
+            <div id="admin-lista-contenido"></div>
+
+            <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
+                <button class="btn-peligro" style="width: 100%; justify-content: center;" onclick="vetarUsuarioActual()">
+                    <span class="material-symbols-outlined">person_off</span>
+                    Vetar Usuario Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modal-creacion" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-creacion')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="modal-creacion-titulo" style="text-align: left; font-family: 'Inter', sans-serif;">Añadir</h2>
+            
+            <div id="modal-body-videos" style="display: none;">
+                <input type="text" id="nuevo-video-titulo" class="input-amarillo" placeholder="Título del video">
+                <input type="url" id="nuevo-video-url" class="input-amarillo" placeholder="Enlace de YouTube (URL)">
+                <button class="btn-azul" onclick="publicarVideo()">Subir Video</button>
+            </div>
+
+            <div id="modal-body-foro" style="display: none;">
+                <textarea id="nuevo-comentario" class="input-amarillo" rows="4" placeholder="Escribe tu duda o comentario..."></textarea>
+                <button class="btn-azul" onclick="publicarComentario()">Publicar en el Foro</button>
+            </div>
+
+            <div id="modal-body-piezas" style="display: none;">
+                <input type="text" id="nueva-pieza-nombre" class="input-amarillo" placeholder="Nombre de la pieza">
+                <input type="number" id="nueva-pieza-precio" class="input-amarillo" placeholder="Precio (€)">
+                <input type="url" id="nueva-pieza-url" class="input-amarillo" placeholder="Enlace de compra">
+                <button class="btn-azul" onclick="publicarPieza()">Añadir Pieza</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-admin-usuario" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-admin-usuario')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 id="admin-modal-nombre" style="text-align: left; font-family: 'Inter', sans-serif;">Usuario</h2>
+            
+            <h4 style="margin-bottom: 10px;">Contenido publicado</h4>
+            
+            <div class="admin-content-card">
+                <div>
+                    <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
+                    "Tened mucho cuidado al desmontar..."
+                </div>
+                <button class="btn-icon" title="Borrar comentario" style="color: var(--rojo-peligro); font-size: 1.2rem;">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
+                <button class="btn-peligro" style="width: 100%; justify-content: center;">
+                    <span class="material-symbols-outlined">person_off</span>
+                    Vetar Usuario Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        let productoSeleccionadoId = null;
+        let usuarioActual = null; // Guardará los datos del usuario logueado
+        let pestanaActiva = 'videos';
+
+        // --- NAVEGACIÓN PRINCIPAL ---
+        function navigate(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            const nav = document.getElementById('main-nav');
+            if (viewId === 'login') {
+                nav.style.display = 'none';
+                mostrarFormulario('opciones'); 
+            } else {
+                nav.style.display = 'flex';
+            }
+            
+            // NUEVO: Si entramos al admin, cargamos los usuarios
+            if (viewId === 'admin') cargarUsuariosAdmin();
+            
+            window.scrollTo(0, 0);
+        }
+
+        function mostrarFormulario(tipo) {
+            document.getElementById('auth-opciones').style.display = 'none';
+            document.getElementById('form-registro').style.display = 'none';
+            document.getElementById('form-login').style.display = 'none';
+
+            if(tipo === 'registro') {
+                document.getElementById('form-registro').style.display = 'block';
+            } else if(tipo === 'login') {
+                document.getElementById('form-login').style.display = 'block';
+            } else {
+                document.getElementById('auth-opciones').style.display = 'flex';
+            }
+        }
+
+        function iniciarSesionApp() {
+            navigate('home');
+        }
+        // --- SISTEMA DE AUTENTICACIÓN ---
+        async function registrarUsuario() {
+            const email = document.getElementById('registro-email').value.trim();
+            const password = document.getElementById('registro-password').value.trim();
+            
+            if (email === '' || password === '') {
+                return alert("Por favor, rellena todos los campos.");
+            }
+
+            try {
+                const respuesta = await fetch(`${API_BASE_URL}/usuarios/registro`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: email, contrasena: password, rol: "USER" })
+                });
+
+                if (respuesta.ok) {
+                    usuarioActual = await respuesta.json(); // Guardamos el usuario
+                    alert("¡Registro exitoso! Bienvenido a Manually.");
+                    document.getElementById('registro-email').value = '';
+                    document.getElementById('registro-password').value = '';
+                    navigate('home'); // Entramos a la app
+                } else {
+                    const error = await respuesta.json();
+                    alert("Error: " + error.mensaje);
+                }
+            } catch (error) { console.error("Error en registro:", error); }
+        }
+
+        async function loginUsuario() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            
+            if (email === '' || password === '') {
+                return alert("Por favor, introduce tu correo y contraseña.");
+            }
+
+            try {
+                const respuesta = await fetch(`${API_BASE_URL}/usuarios/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: email, contrasena: password })
+                });
+
+                if (respuesta.ok) {
+                    usuarioActual = await respuesta.json(); // Guardamos el usuario
+                    document.getElementById('login-email').value = '';
+                    document.getElementById('login-password').value = '';
+                    navigate('home'); // Entramos a la app
+                } else {
+                    alert("Correo o contraseña incorrectos.");
+                }
+            } catch (error) { console.error("Error en login:", error); }
+        }
+
+        function switchTab(tabName, btnElement) {
+            pestanaActiva = tabName; 
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            btnElement.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // --- CONTROL DE MODALES ---
+        function abrirModal(id) { document.getElementById(id).classList.add('active'); }
+        function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function abrirModalCreacion() {
+            document.getElementById('modal-body-videos').style.display = 'none';
+            document.getElementById('modal-body-foro').style.display = 'none';
+            document.getElementById('modal-body-piezas').style.display = 'none';
+
+            const titulo = document.getElementById('modal-creacion-titulo');
+
+            if(pestanaActiva === 'videos') {
+                titulo.innerText = 'Subir Nuevo Video';
+                document.getElementById('modal-body-videos').style.display = 'block';
+            } else if(pestanaActiva === 'foro') {
+                titulo.innerText = 'Añadir Comentario';
+                document.getElementById('modal-body-foro').style.display = 'block';
+            } else if(pestanaActiva === 'piezas') {
+                titulo.innerText = 'Añadir Nueva Pieza';
+                document.getElementById('modal-body-piezas').style.display = 'block';
+            }
+            abrirModal('modal-creacion');
+        }
+
+        function abrirModalAdminUsuario(nombreUsuario) {
+            document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + nombreUsuario;
+            abrirModal('modal-admin-usuario');
+        }
+
+        // --- CONEXIÓN AL BACKEND ---
+        async function cargarProductosDestacados() {
+            const contenedor = document.getElementById('grid-productos-destacados');
+            try {
+                const respuesta = await fetch(`${API_BASE_URL}/productos/destacados`);
+                const productos = await respuesta.json(); 
+
+                contenedor.innerHTML = ''; 
+                productos.forEach(producto => {
+                    const div = document.createElement('div');
+                    div.className = 'cat-item';
+                    div.style.backgroundColor = 'var(--azul-oscuro)';
+                    div.innerHTML = producto.nombre;
+                    
+                    div.onclick = () => abrirProducto(producto.id, producto.nombre); 
+                    contenedor.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error al cargar productos:", error);
+                contenedor.innerHTML = '<p style="color: red;">Error al conectar con el servidor.</p>';
+            }
+        }
+
+        function abrirProducto(id, nombre) {
+            productoSeleccionadoId = id;
+            document.getElementById('titulo-producto').innerText = nombre; 
+            
+            cargarForoBackend(id);
+            cargarPiezasBackend(id);
+            cargarVideosBackend(id);
+            
+            navigate('producto');
+        }
+
+        async function cargarForoBackend(productoId) {
+            const contenedor = document.getElementById('lista-comentarios');
+            contenedor.innerHTML = '<p>Cargando foro...</p>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/comentarios/${productoId}`);
+                const comentarios = await res.json();
+                contenedor.innerHTML = '';
+                
+                if (comentarios.length === 0) {
+                    contenedor.innerHTML = '<p>No hay comentarios aún. ¡Sé el primero!</p>';
+                    return;
+                }
+                
+                comentarios.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'comentario';
+                    const fecha = new Date(c.fechaPublicacion).toLocaleDateString('es-ES');
+                    const autor = c.usuario ? c.usuario.correo : 'Usuario Anónimo';
+                    
+                    div.innerHTML = `
+                        <div class="comentario-header">
+                            <span class="material-symbols-outlined" style="font-size: 1.2rem;">account_circle</span>
+                            <strong>${autor}</strong>
+                            <span style="color: #666; font-size: 0.8rem; margin-left: auto;">${fecha}</span>
+                        </div>
+                        <p style="margin: 5px 0 0 0; line-height: 1.4;">${c.texto}</p>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function cargarPiezasBackend(productoId) {
+            const contenedor = document.getElementById('lista-piezas');
+            contenedor.innerHTML = '<p>Cargando piezas...</p>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/piezas/${productoId}`);
+                const piezas = await res.json();
+                contenedor.innerHTML = '';
+                
+                if (piezas.length === 0) {
+                    contenedor.innerHTML = '<p style="grid-column: 1 / -1;">No hay piezas registradas.</p>';
+                    return;
+                }
+                
+                piezas.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'cat-item';
+                    div.style.backgroundColor = 'var(--amarillo-input)';
+                    div.style.color = 'var(--texto-oscuro)';
+                    div.style.border = '1px solid var(--azul-claro)';
+                    div.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size: 2rem;">build</span><br>
+                        <strong>${p.nombre}</strong><br>
+                        <a href="${p.urlCompra}" target="_blank" style="color: var(--azul-boton); text-decoration: none; font-weight: bold;">${p.precio}€ - Comprar</a>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function cargarVideosBackend(productoId) {
+            const contenedor = document.getElementById('lista-videos');
+            contenedor.innerHTML = '<p>Cargando videos...</p>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/videos/${productoId}`);
+                const videos = await res.json();
+                contenedor.innerHTML = '';
+                
+                if (videos.length === 0) {
+                    contenedor.innerHTML = '<p>No hay videos subidos aún.</p>';
+                    return;
+                }
+                
+                videos.forEach(v => {
+                    const div = document.createElement('div');
+                    div.style.backgroundColor = '#1A1A1A';
+                    div.style.color = '#fff';
+                    div.style.padding = '30px';
+                    div.style.textAlign = 'center';
+                    div.style.borderRadius = '8px';
+                    div.style.marginBottom = '15px';
+                    div.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size: 3rem; color: #ff0000;">play_circle</span>
+                        <h3 style="margin: 10px 0 5px 0;">${v.titulo}</h3>
+                        <a href="${v.url}" target="_blank" style="color: var(--azul-claro);">Ver en YouTube</a>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        // --- FUNCIONES PARA GUARDAR DATOS (POST) ---
+        
+        // --- FUNCIONES PARA GUARDAR DATOS (POST) ---
+        
+        async function publicarComentario() {
+            if (!productoSeleccionadoId) return;
+            
+            // 1. Comprobamos si el usuario ha iniciado sesión
+            if (!usuarioActual) {
+                return alert("Debes iniciar sesión o registrarte para publicar un comentario.");
+            }
+
+            const textarea = document.getElementById('nuevo-comentario');
+            const texto = textarea.value.trim();
+            if (texto === '') return alert("Por favor, escribe algo.");
+
+            try {
+                await fetch(`${API_BASE_URL}/contenido/comentarios/${productoSeleccionadoId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        texto: texto,
+                        // 2. Le enviamos al servidor el ID del usuario que está publicando
+                        usuario: { id: usuarioActual.id } 
+                    })
+                });
+                textarea.value = ''; 
+                cerrarModal('modal-creacion');
+                cargarForoBackend(productoSeleccionadoId); 
+            } catch (error) { console.error("Error al publicar comentario:", error); }
+        }
+
+        async function publicarVideo() {
+            if (!productoSeleccionadoId) return;
+            
+            // 1. Comprobamos si el usuario ha iniciado sesión
+            if (!usuarioActual) {
+                return alert("Debes iniciar sesión para subir un video.");
+            }
+
+            const tituloInput = document.getElementById('nuevo-video-titulo');
+            const urlInput = document.getElementById('nuevo-video-url');
+            
+            if (tituloInput.value.trim() === '' || urlInput.value.trim() === '') {
+                return alert("Rellena todos los campos del video.");
+            }
+
+            try {
+                await fetch(`${API_BASE_URL}/contenido/videos/${productoSeleccionadoId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        titulo: tituloInput.value, 
+                        url: urlInput.value,
+                        // 2. Le enviamos al servidor el ID del usuario
+                        usuario: { id: usuarioActual.id }
+                    })
+                });
+                tituloInput.value = ''; urlInput.value = '';
+                cerrarModal('modal-creacion');
+                cargarVideosBackend(productoSeleccionadoId); 
+            } catch (error) { console.error("Error al publicar video:", error); }
+        }
+
+        async function publicarPieza() {
+            if (!productoSeleccionadoId) return;
+            const nombreInput = document.getElementById('nueva-pieza-nombre');
+            const precioInput = document.getElementById('nueva-pieza-precio');
+            const urlInput = document.getElementById('nueva-pieza-url');
+            
+            if (nombreInput.value.trim() === '' || precioInput.value.trim() === '' || urlInput.value.trim() === '') {
+                return alert("Rellena todos los campos de la pieza.");
+            }
+
+            try {
+                await fetch(`${API_BASE_URL}/contenido/piezas/${productoSeleccionadoId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nombre: nombreInput.value, 
+                        precio: parseFloat(precioInput.value), 
+                        urlCompra: urlInput.value 
+                    })
+                });
+                nombreInput.value = ''; precioInput.value = ''; urlInput.value = '';
+                cerrarModal('modal-creacion');
+                cargarPiezasBackend(productoSeleccionadoId); // Recargamos la lista de piezas
+            } catch (error) { console.error("Error al publicar pieza:", error); }
+        }
+
+        // --- FUNCIÓN DE BÚSQUEDA ---
+        async function ejecutarBusqueda(event) {
+            if (event.key === 'Enter') {
+                const inputElement = event.target;
+                const textoBusqueda = inputElement.value.trim();
+                
+                if (textoBusqueda === '') return;
+
+                navigate('resultados');
+                document.getElementById('input-busqueda-resultados').value = textoBusqueda;
+                document.getElementById('input-busqueda-home').value = '';
+                document.getElementById('titulo-resultados').innerText = `Resultados para "${textoBusqueda}"`;
+                
+                const contenedor = document.getElementById('grid-resultados');
+                contenedor.innerHTML = '<p>Buscando...</p>';
+
+                try {
+                    const respuesta = await fetch(`${API_BASE_URL}/productos/buscar?query=${textoBusqueda}`);
+                    const productos = await respuesta.json();
+                    
+                    contenedor.innerHTML = '';
+                    
+                    if (productos.length === 0) {
+                        contenedor.innerHTML = '<p>No hemos encontrado ningún dispositivo con ese nombre.</p>';
+                        return;
+                    }
+
+                    productos.forEach(producto => {
+                        const div = document.createElement('div');
+                        div.className = 'cat-item';
+                        div.style.backgroundColor = 'var(--azul-oscuro)';
+                        div.innerHTML = producto.nombre;
+                        
+                        div.onclick = () => abrirProducto(producto.id, producto.nombre); 
+                        contenedor.appendChild(div);
+                    });
+
+                } catch (error) {
+                    console.error("Error en la búsqueda:", error);
+                    contenedor.innerHTML = '<p style="color: red;">Error al conectar con el servidor.</p>';
+                }
+            }
+        }
+
+        // --- FUNCIONES DEL PANEL ADMIN ---
+        let usuarioAdminSeleccionadoId = null;
+
+        async function cargarUsuariosAdmin() {
+            const contenedor = document.getElementById('lista-usuarios-admin');
+            try {
+                const res = await fetch(`${API_BASE_URL}/usuarios`);
+                const usuarios = await res.json();
+                contenedor.innerHTML = '';
+
+                if(usuarios.length === 0) {
+                    contenedor.innerHTML = '<p style="padding: 15px;">No hay usuarios registrados.</p>';
+                    return;
+                }
+
+                usuarios.forEach(u => {
+                    const div = document.createElement('div');
+                    div.className = 'admin-item';
+                    div.onclick = () => abrirPanelUsuario(u.id, u.correo);
+                    div.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="material-symbols-outlined">person</span>
+                            <strong>${u.correo}</strong>
+                        </div>
+                        <span class="material-symbols-outlined" style="color: var(--azul-claro);">chevron_right</span>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function abrirPanelUsuario(id, correo) {
+            usuarioAdminSeleccionadoId = id;
+            document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + correo;
+            abrirModal('modal-admin-usuario');
+            
+            const contenedor = document.getElementById('admin-lista-contenido');
+            contenedor.innerHTML = '<p>Cargando contenido...</p>';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
+                const comentarios = await res.json();
+                contenedor.innerHTML = '';
+
+                if(comentarios.length === 0) {
+                    contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
+                    return;
+                }
+
+                comentarios.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'admin-content-card';
+                    div.innerHTML = `
+                        <div>
+                            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
+                            "${c.texto.substring(0, 30)}..."
+                        </div>
+                        <button class="btn-icon" title="Borrar comentario" style="color: var(--rojo-peligro); font-size: 1.2rem;" onclick="borrarComentarioAdmin(${c.id})">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function borrarComentarioAdmin(comentarioId) {
+            if(!confirm("¿Seguro que quieres borrar este comentario?")) return;
+            try {
+                await fetch(`${API_BASE_URL}/contenido/comentarios/${comentarioId}`, { method: 'DELETE' });
+                // Recargamos el panel para que desaparezca
+                abrirPanelUsuario(usuarioAdminSeleccionadoId, document.getElementById('admin-modal-nombre').innerText.replace("Gestionar: ", "")); 
+            } catch (error) { console.error(error); }
+        }
+
+        async function vetarUsuarioActual() {
+            if(!confirm("¿Seguro que quieres borrar a este usuario y TODO su contenido?")) return;
+            try {
+                await fetch(`${API_BASE_URL}/usuarios/${usuarioAdminSeleccionadoId}`, { method: 'DELETE' });
+                cerrarModal('modal-admin-usuario');
+                cargarUsuariosAdmin(); // Recargamos la lista
+            } catch (error) { console.error(error); }
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = () => {
+            cargarProductosDestacados();
+        };
+    </script>
+</body>
+</html>
