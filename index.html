@@ -602,7 +602,7 @@
                 const respuesta = await fetch(`${API_BASE_URL}/usuarios/registro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email, contrasena: password, rol: "ADMIN" })
+                    body: JSON.stringify({ correo: email, contrasena: password, rol: "USER" })
                 });
 
                 if (respuesta.ok) {
@@ -658,37 +658,42 @@
 }
 
         function switchTab(tabName, btnElement) {
-            pestanaActiva = tabName; 
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            btnElement.classList.add('active');
-            document.getElementById('tab-' + tabName).classList.add('active');
-        }
+    pestanaActiva = tabName; // <--- ESTO ES VITAL
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    btnElement.classList.add('active');
+    document.getElementById('tab-' + tabName).classList.add('active');
+}
 
         // --- CONTROL DE MODALES ---
         function abrirModal(id) { document.getElementById(id).classList.add('active'); }
         function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function abrirModalCreacion() {
-            document.getElementById('modal-body-videos').style.display = 'none';
-            document.getElementById('modal-body-foro').style.display = 'none';
-            document.getElementById('modal-body-piezas').style.display = 'none';
+    if (!productoSeleccionadoId) {
+        return alert("Error: No se ha detectado el producto.");
+    }
 
-            const titulo = document.getElementById('modal-creacion-titulo');
+    // Limpiamos formularios previos
+    document.getElementById('modal-body-videos').style.display = 'none';
+    document.getElementById('modal-body-foro').style.display = 'none';
+    document.getElementById('modal-body-piezas').style.display = 'none';
 
-            if(pestanaActiva === 'videos') {
-                titulo.innerText = 'Subir Nuevo Video';
-                document.getElementById('modal-body-videos').style.display = 'block';
-            } else if(pestanaActiva === 'foro') {
-                titulo.innerText = 'Añadir Comentario';
-                document.getElementById('modal-body-foro').style.display = 'block';
-            } else if(pestanaActiva === 'piezas') {
-                titulo.innerText = 'Añadir Nueva Pieza';
-                document.getElementById('modal-body-piezas').style.display = 'block';
-            }
-            abrirModal('modal-creacion');
-        }
+    const titulo = document.getElementById('modal-creacion-titulo');
+
+    if (pestanaActiva === 'videos') {
+        titulo.innerText = 'Subir Nuevo Video';
+        document.getElementById('modal-body-videos').style.display = 'block';
+    } else if (pestanaActiva === 'foro') {
+        titulo.innerText = 'Añadir Comentario';
+        document.getElementById('modal-body-foro').style.display = 'block';
+    } else if (pestanaActiva === 'piezas') {
+        titulo.innerText = 'Añadir Nueva Pieza';
+        document.getElementById('modal-body-piezas').style.display = 'block';
+    }
+    abrirModal('modal-creacion');
+}
 
         function abrirModalAdminUsuario(nombreUsuario) {
             document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + nombreUsuario;
