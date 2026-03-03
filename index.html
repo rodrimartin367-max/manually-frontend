@@ -528,22 +528,22 @@
             <button class="modal-close" onclick="cerrarModal('modal-admin-usuario')">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <h2 id="admin-modal-nombre" style="text-align: left; font-family: 'Inter', sans-serif;">Usuario</h2>
+            <h2 id="admin-modal-nombre" style="text-align: left; font-family: 'Playfair Display', serif;">Gestionar Usuario</h2>
             
-            <h4 style="margin-bottom: 10px;">Contenido publicado</h4>
-            
-            <div id="admin-lista-contenido" style="min-height: 50px; margin-bottom: 20px;"></div>
-
-            <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
-                <button class="btn-azul" style="width: 100%; justify-content: center; margin-bottom: 10px;" onclick="cambiarRolUsuarioActual('ADMIN')">
-                    <span class="material-symbols-outlined" style="vertical-align: middle;">verified_user</span>
-                    Hacer Administrador
-                </button>
-                <button class="btn-peligro" style="width: 100%; justify-content: center;" onclick="vetarUsuarioActual()">
-                    <span class="material-symbols-outlined">person_off</span>
-                    Vetar Usuario Definitivamente
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 10px;">Acciones de Rango:</label>
+                <button class="btn-azul" style="background-color: var(--azul-oscuro);" onclick="cambiarRolUsuarioActual('ADMIN')">
+                    <span class="material-symbols-outlined">verified_user</span> Convertir en ADMIN
                 </button>
             </div>
+
+            <h4 style="border-bottom: 1px solid var(--azul-claro); padding-bottom: 5px;">Aportaciones del usuario</h4>
+            <div id="admin-lista-contenido" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+                </div>
+
+            <button class="btn-peligro" style="width: 100%;" onclick="vetarUsuarioActual()">
+                <span class="material-symbols-outlined">person_off</span> Eliminar Usuario Definitivamente
+            </button>
         </div>
     </div>
 
@@ -552,23 +552,23 @@
             <button class="modal-close" onclick="cerrarModal('modal-creacion')">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <h2 id="modal-creacion-titulo" style="text-align: left; font-family: 'Inter', sans-serif;">Añadir</h2>
+            <h2 id="modal-creacion-titulo" style="font-family: 'Playfair Display', serif;">Añadir Contenido</h2>
             
             <div id="modal-body-videos" style="display: none;">
-                <input type="text" id="nuevo-video-titulo" class="input-amarillo" placeholder="Título del video">
-                <input type="url" id="nuevo-video-url" class="input-amarillo" placeholder="Enlace de YouTube (URL)">
+                <input type="text" id="nuevo-video-titulo" class="input-amarillo" placeholder="Nombre del video (ej. Desmontaje pantalla)">
+                <input type="url" id="nuevo-video-url" class="input-amarillo" placeholder="Link de YouTube (https://...)">
                 <button class="btn-azul" onclick="publicarVideo()">Subir Video</button>
             </div>
 
             <div id="modal-body-foro" style="display: none;">
-                <textarea id="nuevo-comentario" class="input-amarillo" rows="4" placeholder="Escribe tu duda o comentario..."></textarea>
-                <button class="btn-azul" onclick="publicarComentario()">Publicar en el Foro</button>
+                <textarea id="nuevo-comentario" class="input-amarillo" rows="4" placeholder="Escribe tu comentario o duda..."></textarea>
+                <button class="btn-azul" onclick="publicarComentario()">Publicar en Foro</button>
             </div>
 
             <div id="modal-body-piezas" style="display: none;">
                 <input type="text" id="nueva-pieza-nombre" class="input-amarillo" placeholder="Nombre de la pieza">
                 <input type="number" id="nueva-pieza-precio" class="input-amarillo" placeholder="Precio (€)">
-                <input type="url" id="nueva-pieza-url" class="input-amarillo" placeholder="Enlace de compra">
+                <input type="url" id="nueva-pieza-url" class="input-amarillo" placeholder="Link de la página de compra">
                 <button class="btn-azul" onclick="publicarPieza()">Añadir Pieza</button>
             </div>
         </div>
@@ -696,21 +696,22 @@
         function abrirModalCreacion() {
             if (!productoSeleccionadoId) return alert("Selecciona un producto primero");
 
-            // Ocultar todos los cuerpos primero
+            // Ocultar todos los formularios
             document.getElementById('modal-body-videos').style.display = 'none';
             document.getElementById('modal-body-foro').style.display = 'none';
             document.getElementById('modal-body-piezas').style.display = 'none';
 
             const titulo = document.getElementById('modal-creacion-titulo');
 
+            // Detectar pestaña activa y mostrar el formulario correcto
             if(pestanaActiva === 'videos') {
                 titulo.innerText = 'Subir Nuevo Video';
                 document.getElementById('modal-body-videos').style.display = 'block';
             } else if(pestanaActiva === 'foro') {
-                titulo.innerText = 'Añadir Comentario';
+                titulo.innerText = 'Nueva duda en Foro';
                 document.getElementById('modal-body-foro').style.display = 'block';
             } else if(pestanaActiva === 'piezas') {
-                titulo.innerText = 'Añadir Nueva Pieza';
+                titulo.innerText = 'Añadir Pieza de Repuesto';
                 document.getElementById('modal-body-piezas').style.display = 'block';
             }
             abrirModal('modal-creacion');
@@ -1014,44 +1015,36 @@
 
         async function abrirPanelUsuario(id, correo) {
             usuarioAdminSeleccionadoId = id;
-            
-            // 1. Cambiamos el título y limpiamos el contenido
-            document.getElementById('admin-modal-nombre').innerText = "Gestionar: " + correo;
-            document.getElementById('admin-lista-contenido').innerHTML = '<p>Cargando contenido...</p>';
-            
-            // 2. Abrimos el modal visualmente
+            const titulo = document.getElementById('admin-modal-nombre');
+            const contenedor = document.getElementById('admin-lista-contenido');
+
+            titulo.innerText = "Gestionar: " + correo;
+            contenedor.innerHTML = '<p>Buscando actividad...</p>';
             abrirModal('modal-admin-usuario');
 
             try {
-                // 3. Pedimos los comentarios al servidor
+                // Buscamos comentarios (puedes añadir más fetch aquí para videos/piezas si tu backend tiene la ruta)
                 const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
                 const comentarios = await res.json();
-                
-                const contenedor = document.getElementById('admin-lista-contenido');
-                contenedor.innerHTML = ''; // Borramos el "Cargando..."
+                contenedor.innerHTML = '';
 
-                if (comentarios.length === 0) {
-                    contenedor.innerHTML = '<p>Este usuario no ha publicado nada.</p>';
-                    return;
+                if(comentarios.length === 0) {
+                    contenedor.innerHTML = '<p style="color:gray">El usuario no tiene aportaciones recientes.</p>';
+                } else {
+                    comentarios.forEach(c => {
+                        const div = document.createElement('div');
+                        div.className = 'admin-content-card';
+                        div.innerHTML = `
+                            <div style="flex:1; font-size:0.9rem;"><strong>Foro:</strong> ${c.texto.substring(0,40)}...</div>
+                            <button class="btn-icon" style="color:var(--rojo-peligro)" onclick="borrarComentarioAdmin(${c.id})">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        `;
+                        contenedor.appendChild(div);
+                    });
                 }
-
-                comentarios.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'admin-content-card';
-                    div.innerHTML = `
-                        <div style="flex:1">
-                            <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">forum</span>
-                            "${c.texto.substring(0, 40)}..."
-                        </div>
-                        <button class="btn-icon" title="Borrar" style="color: var(--rojo-peligro);" onclick="borrarComentarioAdmin(${c.id})">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    `;
-                    contenedor.appendChild(div);
-                });
             } catch (error) { 
-                console.error("Error al cargar contenido:", error);
-                document.getElementById('admin-lista-contenido').innerHTML = '<p>Error al conectar con el servidor.</p>';
+                contenedor.innerHTML = '<p>Error al conectar con el servidor.</p>';
             }
         }
 
@@ -1074,22 +1067,20 @@
         }
 
         async function cambiarRolUsuarioActual(nuevoRol) {
-    if(!confirm("¿Seguro que quieres hacer a este usuario " + nuevoRol + "?")) return;
-    try {
-        const respuesta = await fetch(`${API_BASE_URL}/usuarios/${usuarioAdminSeleccionadoId}/rol`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rol: nuevoRol })
-        });
-        
-        if(respuesta.ok) {
-            alert("¡Rol actualizado con éxito!");
-            cerrarModal('modal-admin-usuario');
-        } else {
-            alert("Error al cambiar el rol. Comprueba tu Backend.");
+            if(!confirm(`¿Hacer a este usuario ${nuevoRol}?`)) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/usuarios/${usuarioAdminSeleccionadoId}/rol`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rol: nuevoRol })
+                });
+                if(res.ok) {
+                    alert("Rol actualizado. El usuario ahora es " + nuevoRol);
+                    cerrarModal('modal-admin-usuario');
+                    cargarUsuariosAdmin();
+                }
+            } catch (e) { console.error(e); }
         }
-    } catch (error) { console.error("Error al cambiar rol:", error); }
-}
 
         // Ejecutar al cargar la página
         window.onload = () => {
