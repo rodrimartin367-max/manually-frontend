@@ -452,11 +452,11 @@
         </div>
         
         <div class="grid-categorias">
-            <div class="cat-item" onclick="abrirCategoria('Electrónica')">Electro</div>
+            <div class="cat-item" onclick="abrirCategoria('Electro')">Electro</div>
             <div class="cat-item" onclick="abrirCategoria('Móviles')">Móviles</div>
             <div class="cat-item" onclick="abrirCategoria('Audio')">Audio</div>
             <div class="cat-item" onclick="abrirCategoria('Portátiles')">Portátiles</div>
-            <div class="cat-item" onclick="abrirCategoria('Videojuegos')">Juegos</div>
+            <div class="cat-item" onclick="abrirCategoria('Juegos')">Juegos</div>
             <div class="cat-item" onclick="abrirCategoria('Otros')">Otros</div>
         </div>
 
@@ -758,22 +758,88 @@
         async function cargarProductosDestacados() {
             const contenedor = document.getElementById('grid-productos-destacados');
             try {
-                const respuesta = await fetch(`${API_BASE_URL}/productos/destacados`);
+                // Asumo que tu backend sigue teniendo esta ruta (o /productos)
+                const respuesta = await fetch(`${API_BASE_URL}/productos`); 
                 const productos = await respuesta.json(); 
 
                 contenedor.innerHTML = ''; 
+                
+                if(productos.length === 0) {
+                    contenedor.innerHTML = '<p>No hay dispositivos. ¡Añade el primero!</p>';
+                    return;
+                }
+
                 productos.forEach(producto => {
                     const div = document.createElement('div');
                     div.className = 'cat-item';
                     div.style.backgroundColor = 'var(--azul-oscuro)';
-                    div.innerHTML = producto.nombre;
+                    div.style.display = 'flex';
+                    div.style.flexDirection = 'column';
                     
-                    div.onclick = () => abrirProducto(producto.id, producto.nombre); 
+                    // Aquí le decimos que si hay imagen, la pinte. Si no, solo el nombre.
+                    let contenidoHtml = '';
+                    if (producto.imagenUrl && producto.imagenUrl.startsWith('http')) {
+                        contenidoHtml += `<img src="${producto.imagenUrl}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 5px; margin-bottom: 8px;">`;
+                    } else {
+                        contenidoHtml += `<span class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 8px;">smartphone</span>`;
+                    }
+                    contenidoHtml += `<strong>${producto.nombre}</strong>`;
+                    
+                    div.innerHTML = contenidoHtml;
+                    
+                    // Le pasamos la imagen a la función abrirProducto
+                    div.onclick = () => abrirProducto(producto.id, producto.nombre, producto.imagenUrl); 
                     contenedor.appendChild(div);
                 });
             } catch (error) {
                 console.error("Error al cargar productos:", error);
                 contenedor.innerHTML = '<p style="color: red;">Error al conectar con el servidor.</p>';
+            }
+        }
+        async function abrirCategoria(categoria) {
+            navigate('resultados'); // Vamos a la pantalla de resultados
+            document.getElementById('input-busqueda-resultados').value = '';
+            document.getElementById('titulo-resultados').innerText = `Categoría: ${categoria}`;
+            
+            const contenedor = document.getElementById('grid-resultados');
+            contenedor.innerHTML = '<p>Buscando...</p>';
+
+            try {
+                // Llamamos a la nueva ruta que creaste en el Backend (ProductoController)
+                const respuesta = await fetch(`${API_BASE_URL}/productos/categoria/${categoria}`);
+                
+                if (!respuesta.ok) {
+                    throw new Error("La ruta de categoría no existe en el backend todavía");
+                }
+                
+                const productos = await respuesta.json();
+                contenedor.innerHTML = '';
+                
+                if (productos.length === 0) {
+                    contenedor.innerHTML = '<p>Aún no hay dispositivos en esta categoría.</p>';
+                    return;
+                }
+
+                productos.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'cat-item';
+                    div.style.backgroundColor = 'var(--azul-oscuro)';
+                    div.style.display = 'flex';
+                    div.style.flexDirection = 'column';
+                    
+                    let contenidoHtml = '';
+                    if (p.imagenUrl && p.imagenUrl.startsWith('http')) {
+                        contenidoHtml += `<img src="${p.imagenUrl}" style="width:100%; height:100px; object-fit:cover; border-radius:5px; margin-bottom:8px;">`;
+                    }
+                    contenidoHtml += `<strong>${p.nombre}</strong>`;
+                    
+                    div.innerHTML = contenidoHtml;
+                    div.onclick = () => abrirProducto(p.id, p.nombre, p.imagenUrl); 
+                    contenedor.appendChild(div);
+                });
+            } catch (error) { 
+                console.error("Error al abrir categoría:", error); 
+                contenedor.innerHTML = '<p style="color:red;">Error. Revisa que el Backend esté actualizado.</p>';
             }
         }
 
