@@ -574,6 +574,13 @@
         </div>
     </div>
 
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0; font-family: 'Inter', sans-serif;">Dispositivos</h2>
+            <button class="btn-icon" style="color: var(--azul-boton);" onclick="abrirModal('modal-crear-producto')">
+                <span class="material-symbols-outlined" style="font-size: 2rem;">add_circle</span>
+            </button>
+        </div>
+
     <script>
         const API_BASE_URL = 'https://manuallt-backend.onrender.com/api';
         let productoSeleccionadoId = null;
@@ -747,13 +754,66 @@
 
         function abrirProducto(id, nombre) {
             productoSeleccionadoId = id;
-            document.getElementById('titulo-producto').innerText = nombre; 
+            
+            // Si el usuario logueado es ADMIN, le mostramos el botón de borrar al lado del nombre
+            let htmlTitulo = nombre;
+            if (usuarioActual && usuarioActual.rol === 'ADMIN') {
+                htmlTitulo += ` <button class="btn-icon" style="color: var(--rojo-peligro); vertical-align: middle; margin-left: 10px;" onclick="borrarProductoAdmin(${id})" title="Borrar Producto">
+                                    <span class="material-symbols-outlined">delete_forever</span>
+                                </button>`;
+            }
+            
+            document.getElementById('titulo-producto').innerHTML = htmlTitulo; 
             
             cargarForoBackend(id);
             cargarPiezasBackend(id);
             cargarVideosBackend(id);
             
             navigate('producto');
+        }
+
+        // --- FUNCIÓN PARA GUARDAR EL PRODUCTO ---
+        async function publicarProducto() {
+            if (!usuarioActual) return alert("Debes iniciar sesión para añadir un dispositivo.");
+            
+            const nombreInput = document.getElementById('nuevo-producto-nombre');
+            const categoriaInput = document.getElementById('nuevo-producto-categoria');
+            
+            if (nombreInput.value.trim() === '') return alert("Ponle un nombre al dispositivo.");
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/productos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nombre: nombreInput.value.trim(), 
+                        categoria: categoriaInput.value 
+                    })
+                });
+                
+                if (res.ok) {
+                    nombreInput.value = ''; // Limpiamos el campo
+                    cerrarModal('modal-crear-producto');
+                    cargarProductosDestacados(); // Recargamos la lista principal
+                    alert("¡Dispositivo añadido! Ya pueden empezar a subir tutoriales.");
+                } else {
+                    alert("Hubo un error al guardar el producto.");
+                }
+            } catch (e) { console.error("Error al publicar:", e); }
+        }
+
+        // --- FUNCIÓN PARA BORRAR (SOLO ADMIN) ---
+        async function borrarProductoAdmin(id) {
+            if(!confirm("⚠️ ATENCIÓN: ¿Seguro que quieres borrar este dispositivo? Se borrarán también todos sus videos, piezas y comentarios.")) return;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/productos/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    alert("Dispositivo eliminado del sistema.");
+                    navigate('home');
+                    cargarProductosDestacados(); // Recargamos la pantalla principal
+                }
+            } catch(e) { console.error("Error al borrar:", e); }
         }
 
         async function cargarForoBackend(productoId) {
