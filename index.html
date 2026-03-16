@@ -461,6 +461,12 @@
         </div>
 
         <h2 style="text-align: left; font-family: 'Inter', sans-serif;">Productos Destacados</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0; font-family: 'Inter', sans-serif;">Dispositivos</h2>
+            <button class="btn-icon" style="color: var(--azul-boton);" onclick="abrirModal('modal-crear-producto')">
+                <span class="material-symbols-outlined" style="font-size: 2rem;">add_circle</span>
+            </button>
+        </div>
         <div class="grid-categorias" id="grid-productos-destacados">
             <p>Cargando productos...</p>
         </div>
@@ -574,12 +580,29 @@
         </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="margin: 0; font-family: 'Inter', sans-serif;">Dispositivos</h2>
-            <button class="btn-icon" style="color: var(--azul-boton);" onclick="abrirModal('modal-crear-producto')">
-                <span class="material-symbols-outlined" style="font-size: 2rem;">add_circle</span>
+    <div id="modal-crear-producto" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-crear-producto')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 style="font-family: 'Playfair Display', serif; text-align: left;">Añadir Dispositivo</h2>
+            
+            <input type="text" id="nuevo-producto-nombre" class="input-amarillo" placeholder="Nombre completo (ej. iPhone 13 Pro)">
+            
+            <select id="nuevo-producto-categoria" class="input-amarillo" style="margin-top: 15px; width: 100%; padding: 12px; border: 1px solid var(--azul-claro); border-radius: 8px; background: white;">
+                <option value="Móviles">Móviles</option>
+                <option value="Portátiles">Portátiles</option>
+                <option value="Audio">Audio</option>
+                <option value="Electro">Electrodomésticos</option>
+                <option value="Juegos">Consolas y Juegos</option>
+                <option value="Otros">Otros</option>
+            </select>
+
+            <button class="btn-azul" style="margin-top: 25px; width: 100%; justify-content: center;" onclick="publicarProducto()">
+                Publicar Dispositivo
             </button>
         </div>
+    </div>
 
     <script>
         const API_BASE_URL = 'https://manuallt-backend.onrender.com/api';
