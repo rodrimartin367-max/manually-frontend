@@ -893,14 +893,18 @@
 
         // --- FUNCIÓN PARA BORRAR (SOLO ADMIN) ---
         async function borrarProductoAdmin(id) {
-            if(!confirm("⚠️ ATENCIÓN: ¿Seguro que quieres borrar este dispositivo? Se borrarán también todos sus videos, piezas y comentarios.")) return;
+            if(!confirm("⚠️ ATENCIÓN: ¿Seguro que quieres borrar este dispositivo? Se borrará también TODO su foro, videos y piezas.")) return;
             
             try {
                 const res = await fetch(`${API_BASE_URL}/productos/${id}`, { method: 'DELETE' });
+                
                 if(res.ok) {
-                    alert("Dispositivo eliminado del sistema.");
-                    navigate('home');
-                    cargarProductosDestacados(); // Recargamos la pantalla principal
+                    alert("Dispositivo y todo su contenido eliminados.");
+                    cerrarModal('modal-admin-usuario'); // Cerramos el panel negro
+                    navigate('home'); // Volvemos a la pantalla principal
+                    cargarProductosDestacados(); // Recargamos la lista
+                } else {
+                    alert("❌ Error: El servidor ha bloqueado el borrado. Comprueba que el backend se ha actualizado correctamente.");
                 }
             } catch(e) { console.error("Error al borrar:", e); }
         }
