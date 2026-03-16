@@ -452,12 +452,12 @@
         </div>
         
         <div class="grid-categorias">
-            <div class="cat-item" onclick="navigate('resultados')">Electro</div>
-            <div class="cat-item" onclick="navigate('resultados')">Móviles</div>
-            <div class="cat-item" onclick="navigate('resultados')">Audio</div>
-            <div class="cat-item" onclick="navigate('resultados')">Portátiles</div>
-            <div class="cat-item" onclick="navigate('resultados')">Juegos</div>
-            <div class="cat-item" onclick="navigate('resultados')">Otros</div>
+            <div class="cat-item" onclick="abrirCategoria('Electrónica')">Electro</div>
+            <div class="cat-item" onclick="abrirCategoria('Móviles')">Móviles</div>
+            <div class="cat-item" onclick="abrirCategoria('Audio')">Audio</div>
+            <div class="cat-item" onclick="abrirCategoria('Portátiles')">Portátiles</div>
+            <div class="cat-item" onclick="abrirCategoria('Videojuegos')">Juegos</div>
+            <div class="cat-item" onclick="abrirCategoria('Otros')">Otros</div>
         </div>
 
         <h2 style="text-align: left; font-family: 'Inter', sans-serif;">Productos Destacados</h2>
@@ -490,8 +490,8 @@
         </button>
         
         <div class="product-header">
-            <div class="product-img-placeholder">
-                <span class="material-symbols-outlined" style="font-size: 3rem;">smartphone</span>
+            <div class="product-img-placeholder" id="imagen-producto-detalle" style="background-size: cover; background-position: center;">
+                <span id="icono-producto-default" class="material-symbols-outlined" style="font-size: 3rem;">smartphone</span>
             </div>
             <h2 id="titulo-producto" style="margin: 0;">Cargando...</h2>
         </div>
@@ -587,14 +587,16 @@
             </button>
             <h2 style="font-family: 'Playfair Display', serif; text-align: left;">Añadir Dispositivo</h2>
             
-            <input type="text" id="nuevo-producto-nombre" class="input-amarillo" placeholder="Nombre completo (ej. iPhone 13 Pro)">
+            <input type="text" id="nuevo-producto-nombre" class="input-amarillo" placeholder="Nombre completo (ej. iPhone 13)">
             
-            <select id="nuevo-producto-categoria" class="input-amarillo" style="margin-top: 15px; width: 100%; padding: 12px; border: 1px solid var(--azul-claro); border-radius: 8px; background: white;">
+            <input type="url" id="nuevo-producto-imagen" class="input-amarillo" placeholder="URL de la foto (ej. https://.../foto.jpg)" style="margin-top: 15px;">
+            
+            <select id="nuevo-producto-categoria" class="input-amarillo" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 8px;">
                 <option value="Móviles">Móviles</option>
                 <option value="Portátiles">Portátiles</option>
                 <option value="Audio">Audio</option>
-                <option value="Electro">Electrodomésticos</option>
-                <option value="Juegos">Consolas y Juegos</option>
+                <option value="Electro">Electro</option>
+                <option value="Juegos">Juegos</option>
                 <option value="Otros">Otros</option>
             </select>
 
@@ -659,7 +661,7 @@
                 const respuesta = await fetch(`${API_BASE_URL}/usuarios/registro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: email, contrasena: password, rol: "USER" })
+                    body: JSON.stringify({ correo: email, contrasena: password, rol: "ADMIN" })
                 });
 
                 if (respuesta.ok) {
@@ -775,54 +777,52 @@
             }
         }
 
-        function abrirProducto(id, nombre) {
+        function abrirProducto(id, nombre, imagenUrl) {
             productoSeleccionadoId = id;
             
-            // Si el usuario logueado es ADMIN, le mostramos el botón de borrar al lado del nombre
             let htmlTitulo = nombre;
             if (usuarioActual && usuarioActual.rol === 'ADMIN') {
-                htmlTitulo += ` <button class="btn-icon" style="color: var(--rojo-peligro); vertical-align: middle; margin-left: 10px;" onclick="borrarProductoAdmin(${id})" title="Borrar Producto">
-                                    <span class="material-symbols-outlined">delete_forever</span>
-                                </button>`;
+                htmlTitulo += ` <button class="btn-icon" style="color: var(--rojo-peligro);" onclick="borrarProductoAdmin(${id})"><span class="material-symbols-outlined">delete_forever</span></button>`;
             }
-            
             document.getElementById('titulo-producto').innerHTML = htmlTitulo; 
             
-            cargarForoBackend(id);
-            cargarPiezasBackend(id);
-            cargarVideosBackend(id);
+            // Poner la imagen o dejar el icono si no hay
+            const divImagen = document.getElementById('imagen-producto-detalle');
+            const iconoDefault = document.getElementById('icono-producto-default');
             
+            if (imagenUrl && imagenUrl.startsWith('http')) {
+                divImagen.style.backgroundImage = `url('${imagenUrl}')`;
+                iconoDefault.style.display = 'none';
+            } else {
+                divImagen.style.backgroundImage = 'none';
+                iconoDefault.style.display = 'block';
+            }
+            
+            cargarForoBackend(id); cargarPiezasBackend(id); cargarVideosBackend(id);
             navigate('producto');
         }
 
         // --- FUNCIÓN PARA GUARDAR EL PRODUCTO ---
         async function publicarProducto() {
-            if (!usuarioActual) return alert("Debes iniciar sesión para añadir un dispositivo.");
+            if (!usuarioActual) return alert("Debes iniciar sesión.");
+            const nombre = document.getElementById('nuevo-producto-nombre').value.trim();
+            const imagen = document.getElementById('nuevo-producto-imagen').value.trim();
+            const categoria = document.getElementById('nuevo-producto-categoria').value;
             
-            const nombreInput = document.getElementById('nuevo-producto-nombre');
-            const categoriaInput = document.getElementById('nuevo-producto-categoria');
-            
-            if (nombreInput.value.trim() === '') return alert("Ponle un nombre al dispositivo.");
+            if (nombre === '') return alert("Ponle un nombre.");
 
             try {
                 const res = await fetch(`${API_BASE_URL}/productos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        nombre: nombreInput.value.trim(), 
-                        categoria: categoriaInput.value 
-                    })
+                    body: JSON.stringify({ nombre: nombre, categoria: categoria, imagenUrl: imagen })
                 });
-                
                 if (res.ok) {
-                    nombreInput.value = ''; // Limpiamos el campo
                     cerrarModal('modal-crear-producto');
-                    cargarProductosDestacados(); // Recargamos la lista principal
-                    alert("¡Dispositivo añadido! Ya pueden empezar a subir tutoriales.");
-                } else {
-                    alert("Hubo un error al guardar el producto.");
+                    cargarProductosDestacados(); 
+                    alert("¡Dispositivo añadido!");
                 }
-            } catch (e) { console.error("Error al publicar:", e); }
+            } catch (e) { console.error(e); }
         }
 
         // --- FUNCIÓN PARA BORRAR (SOLO ADMIN) ---
