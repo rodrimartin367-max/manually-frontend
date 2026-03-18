@@ -137,11 +137,19 @@
         .botones-auth {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.2rem;
             align-items: center;
             width: 100%;        /* Le decimos que ocupe todo el ancho disponible... */
             max-width: 320px;   /* ...hasta un máximo de 320px (puedes subir este número si los quieres aún más largos) */
             margin: 0 auto;     /* Centramos el bloque de botones */
+        }
+
+        .password-container { position: relative; width: 100%; margin-bottom: 1rem; }
+        .password-container .input-amarillo { margin-bottom: 0; padding-right: 2.8rem; }
+        .toggle-password {
+            position: absolute; right: 0.8rem; top: 50%;
+            transform: translateY(-50%); cursor: pointer;
+            color: var(--azul-oscuro); user-select: none;
         }
         
         /* Opcional: Para asegurar que el título se ve bien */
@@ -444,8 +452,10 @@
         <div class="login-center-content" id="form-registro" style="display: none;">
             <h2 style="color: white; margin-bottom: 30px;">Crear cuenta</h2>
             <input type="email" id="registro-email" class="input-amarillo" placeholder="Correo electrónico">
-            <input type="password" id="registro-password" class="input-amarillo" placeholder="Contraseña">
-            <div class="botones-auth">
+            <div class="password-container">
+                <input type="password" id="registro-password" class="input-amarillo" placeholder="Contraseña">
+                <span class="material-symbols-outlined toggle-password" onclick="togglePassword('registro-password', this)">visibility_off</span>
+            </div>            <div class="botones-auth">
                 <button class="btn-crema" onclick="registrarUsuario()">Registrarse</button>
                 <button class="btn-texto" onclick="mostrarFormulario('opciones')">Volver</button>
             </div>
@@ -454,8 +464,10 @@
         <div class="login-center-content" id="form-login" style="display: none;">
             <h2 style="color: white; margin-bottom: 30px;">Bienvenido de nuevo</h2>
             <input type="email" id="login-email" class="input-amarillo" placeholder="Correo electrónico">
-            <input type="password" id="login-password" class="input-amarillo" placeholder="Contraseña">
-            <div class="botones-auth">
+            <div class="password-container">
+                <input type="password" id="login-password" class="input-amarillo" placeholder="Contraseña">
+                <span class="material-symbols-outlined toggle-password" onclick="togglePassword('login-password', this)">visibility_off</span>
+            </div>            <div class="botones-auth">
                 <button class="btn-crema" onclick="loginUsuario()">Iniciar sesión</button>
                 <button class="btn-texto" onclick="mostrarFormulario('opciones')">Volver</button>
             </div>
@@ -682,13 +694,22 @@
             document.getElementById('form-login').style.display = 'none';
 
             if(tipo === 'registro') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-registro').style.display = 'flex';
             } else if(tipo === 'login') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-login').style.display = 'flex';
             } else {
                 document.getElementById('auth-opciones').style.display = 'flex';
+            }
+        }
+
+        function togglePassword(inputId, icono) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icono.innerText = 'visibility';
+            } else {
+                input.type = 'password';
+                icono.innerText = 'visibility_off';
             }
         }
 
