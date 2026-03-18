@@ -680,8 +680,10 @@
             document.getElementById('form-login').style.display = 'none';
 
             if(tipo === 'registro') {
+                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-registro').style.display = 'flex';
             } else if(tipo === 'login') {
+                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-login').style.display = 'flex';
             } else {
                 document.getElementById('auth-opciones').style.display = 'flex';
