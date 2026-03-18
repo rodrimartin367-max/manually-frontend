@@ -679,11 +679,9 @@
             document.getElementById('form-login').style.display = 'none';
 
             if(tipo === 'registro') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
-                document.getElementById('form-registro').style.display = 'flex';
+                document.getElementById('form-registro').style.display = 'block';
             } else if(tipo === 'login') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
-                document.getElementById('form-login').style.display = 'flex';
+                document.getElementById('form-login').style.display = 'block';
             } else {
                 document.getElementById('auth-opciones').style.display = 'flex';
             }
