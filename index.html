@@ -612,6 +612,31 @@
         </div>
     </div>
 
+    <div id="modal-editar-producto" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal('modal-editar-producto')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 style="font-family: 'Playfair Display', serif; text-align: left;">Editar Dispositivo</h2>
+            
+            <input type="text" id="edit-producto-nombre" class="input-amarillo" placeholder="Nombre completo">
+            <input type="url" id="edit-producto-imagen" class="input-amarillo" placeholder="URL de la foto" style="margin-top: 15px;">
+            
+            <select id="edit-producto-categoria" class="input-amarillo" style="margin-top: 15px; width: 100%; padding: 12px; border-radius: 8px;">
+                <option value="Electro">Electrodomésticos</option>
+                <option value="Móviles">Móviles</option>
+                <option value="Audio">Audio</option>
+                <option value="Portátiles">Portátiles</option>
+                <option value="Juegos">Videojuegos</option>
+                <option value="Otros">Otros</option>
+            </select>
+
+            <button class="btn-azul" style="margin-top: 25px; width: 100%; justify-content: center;" onclick="guardarEdicionProducto()">
+                Guardar Cambios
+            </button>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = 'https://manuallt-backend.onrender.com/api';
         let productoSeleccionadoId = null;
@@ -854,11 +879,17 @@
             
             let htmlTitulo = nombre;
             if (usuarioActual && usuarioActual.rol === 'ADMIN') {
-                htmlTitulo += ` <button class="btn-icon" style="color: var(--rojo-peligro);" onclick="borrarProductoAdmin(${id})"><span class="material-symbols-outlined">delete_forever</span></button>`;
+                htmlTitulo += ` 
+                    <button class="btn-icon" style="color: #f1c40f; vertical-align: middle; margin-left: 10px;" onclick="abrirModalEdicion(${id})" title="Editar">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn-icon" style="color: var(--rojo-peligro); vertical-align: middle; margin-left: 5px;" onclick="borrarProductoAdmin(${id})" title="Borrar">
+                        <span class="material-symbols-outlined">delete_forever</span>
+                    </button>`;
             }
             document.getElementById('titulo-producto').innerHTML = htmlTitulo; 
             
-            // Poner la imagen o dejar el icono si no hay
+            // ... (el resto de tu función abrirProducto se queda exactamente igual)
             const divImagen = document.getElementById('imagen-producto-detalle');
             const iconoDefault = document.getElementById('icono-producto-default');
             
@@ -872,6 +903,53 @@
             
             cargarForoBackend(id); cargarPiezasBackend(id); cargarVideosBackend(id);
             navigate('producto');
+        }
+
+        // --- FUNCIONES DE EDICIÓN ---
+        async function abrirModalEdicion(id) {
+            try {
+                // Pedimos al backend los datos actuales del producto para rellenar los huecos
+                const respuesta = await fetch(`${API_BASE_URL}/productos/${id}`);
+                const producto = await respuesta.json();
+
+                document.getElementById('edit-producto-nombre').value = producto.nombre;
+                document.getElementById('edit-producto-imagen').value = producto.imagenUrl || '';
+                document.getElementById('edit-producto-categoria').value = producto.categoria;
+                
+                abrirModal('modal-editar-producto');
+            } catch (error) {
+                console.error("Error al obtener los datos para editar:", error);
+                alert("Hubo un error al cargar los datos del dispositivo.");
+            }
+        }
+
+        async function guardarEdicionProducto() {
+            const nombre = document.getElementById('edit-producto-nombre').value.trim();
+            const imagen = document.getElementById('edit-producto-imagen').value.trim();
+            const categoria = document.getElementById('edit-producto-categoria').value;
+            
+            if (nombre === '') return alert("El nombre no puede estar vacío.");
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/productos/${productoSeleccionadoId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre: nombre, imagenUrl: imagen, categoria: categoria })
+                });
+
+                if (res.ok) {
+                    cerrarModal('modal-editar-producto');
+                    alert("¡Cambios guardados correctamente!");
+                    
+                    // Actualizamos la pantalla actual para ver los cambios
+                    abrirProducto(productoSeleccionadoId, nombre, imagen);
+                    cargarProductosDestacados(); // Actualizamos también la lista de inicio por debajo
+                } else {
+                    alert("Error al guardar los cambios en el servidor.");
+                }
+            } catch (error) { 
+                console.error("Error al editar:", error); 
+            }
         }
 
         // --- FUNCIÓN PARA GUARDAR EL PRODUCTO ---
