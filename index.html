@@ -1374,6 +1374,32 @@
             } catch (error) { console.error(error); }
         }
 
+        async function borrarVideoAdmin(videoId) {
+            if(!confirm("¿Seguro que quieres borrar este video?")) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/videos/${videoId}`, { method: 'DELETE' });
+                if(res.ok) {
+                    // Recargamos el panel para ver que ha desaparecido
+                    abrirPanelUsuario(usuarioAdminSeleccionadoId, document.getElementById('admin-modal-nombre').innerText.replace("Gestionar: ", "")); 
+                } else {
+                    alert("Error al borrar el video en el servidor.");
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function borrarPiezaAdmin(piezaId) {
+            if(!confirm("¿Seguro que quieres borrar esta pieza?")) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/contenido/piezas/${piezaId}`, { method: 'DELETE' });
+                if(res.ok) {
+                    // Recargamos el panel para ver que ha desaparecido
+                    abrirPanelUsuario(usuarioAdminSeleccionadoId, document.getElementById('admin-modal-nombre').innerText.replace("Gestionar: ", "")); 
+                } else {
+                    alert("Error al borrar la pieza en el servidor.");
+                }
+            } catch (error) { console.error(error); }
+        }
+
         async function vetarUsuarioActual() {
             if(!confirm("¿Seguro que quieres borrar a este usuario y TODO su contenido?")) return;
             try {
