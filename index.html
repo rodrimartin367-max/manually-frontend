@@ -123,13 +123,14 @@
 
         /* Centra todo el bloque en medio de la pantalla */
         .login-center-content {
-            display: flex !important; /* El !important evita que JS lo rompa */
-            flex-direction: column !important; /* Fuerza que sea uno debajo de otro */
-            align-items: center;    
+            display: flex; /* Lo preparamos para ser un contenedor flexible */
+            flex-direction: column; /* Obligamos a que todo vaya uno DEBAJO de otro */
+            align-items: center;    /* Centramos horizontalmente */
             justify-content: center;
-            min-height: 80vh;       
-            width: 100%; /* Asegura que ocupe todo el ancho disponible */
-            gap: 30px;  
+            text-align: center;
+            width: 90%; 
+            max-width: 25rem;
+            margin: 0 auto; /* Lo mantiene en el centro de la pantalla azul */
         }
 
         /* Estilo para que los botones queden ordenados */
@@ -679,10 +680,8 @@
             document.getElementById('form-login').style.display = 'none';
 
             if(tipo === 'registro') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-registro').style.display = 'flex';
             } else if(tipo === 'login') {
-                // ANTES ESTABA EN 'block', AHORA ES 'flex'
                 document.getElementById('form-login').style.display = 'flex';
             } else {
                 document.getElementById('auth-opciones').style.display = 'flex';
