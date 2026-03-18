@@ -136,19 +136,21 @@
         /* Estilo para que los botones queden ordenados */
         .botones-auth {
             display: flex;
-            flex-direction: column; 
-            gap: 15px;              
-            width: 100%;
-            max-width: 300px;       
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            width: 100%;        /* Le decimos que ocupe todo el ancho disponible... */
+            max-width: 320px;   /* ...hasta un máximo de 320px (puedes subir este número si los quieres aún más largos) */
+            margin: 0 auto;     /* Centramos el bloque de botones */
         }
         
         /* Opcional: Para asegurar que el título se ve bien */
         .logo-gigante {
-            margin: 0;
-            font-size: 4rem;
-            color: white;
-            font-family: 'Playfair Display', serif; /* O la fuente que más te guste */
-            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 4.5rem); 
+            color: var(--bg-crema);
+            margin-top: 0;
+            margin-bottom: 4rem; /* ¡Aumentamos este número para separarlo de los botones! */
         }
 
         .btn-crema {
