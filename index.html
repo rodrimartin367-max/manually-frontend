@@ -123,21 +123,22 @@
 
         /* Centra todo el bloque en medio de la pantalla */
         .login-center-content {
-            display: flex;
-            flex-direction: column; /* Pone los elementos uno DEBAJO del otro */
-            align-items: center;    /* Centra horizontalmente */
+            display: flex !important; /* El !important evita que JS lo rompa */
+            flex-direction: column !important; /* Fuerza que sea uno debajo de otro */
+            align-items: center;    
             justify-content: center;
-            min-height: 80vh;       /* Usa casi toda la altura de la pantalla */
-            gap: 40px;              /* Espacio de separación entre el título y los botones */
+            min-height: 80vh;       
+            width: 100%; /* Asegura que ocupe todo el ancho disponible */
+            gap: 30px;  
         }
 
         /* Estilo para que los botones queden ordenados */
         .botones-auth {
             display: flex;
-            flex-direction: column; /* Botones uno debajo del otro */
-            gap: 15px;              /* Separación entre un botón y otro */
+            flex-direction: column; 
+            gap: 15px;              
             width: 100%;
-            max-width: 300px;       /* Evita que los botones sean gigantes en ordenador */
+            max-width: 300px;       
         }
         
         /* Opcional: Para asegurar que el título se ve bien */
@@ -678,9 +679,11 @@
             document.getElementById('form-login').style.display = 'none';
 
             if(tipo === 'registro') {
-                document.getElementById('form-registro').style.display = 'block';
+                // ANTES ESTABA EN 'block', AHORA ES 'flex'
+                document.getElementById('form-registro').style.display = 'flex';
             } else if(tipo === 'login') {
-                document.getElementById('form-login').style.display = 'block';
+                // ANTES ESTABA EN 'block', AHORA ES 'flex'
+                document.getElementById('form-login').style.display = 'flex';
             } else {
                 document.getElementById('auth-opciones').style.display = 'flex';
             }
