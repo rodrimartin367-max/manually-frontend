@@ -121,26 +121,32 @@
             padding: 0;
         }
 
+        /* Centra todo el bloque en medio de la pantalla */
         .login-center-content {
-            text-align: center;
-            width: 90%; /* Se adapta al móvil */
-            max-width: 25rem;
-            padding: 2rem;
+            display: flex;
+            flex-direction: column; /* Pone los elementos uno DEBAJO del otro */
+            align-items: center;    /* Centra horizontalmente */
+            justify-content: center;
+            min-height: 80vh;       /* Usa casi toda la altura de la pantalla */
+            gap: 40px;              /* Espacio de separación entre el título y los botones */
         }
 
-        .logo-gigante {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 10vw, 4.5rem); /* Se encoge solo si la pantalla es enana */
-            color: var(--bg-crema);
-            margin-top: 0;
-            margin-bottom: 2.5rem;
-        }
-
+        /* Estilo para que los botones queden ordenados */
         .botones-auth {
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
+            flex-direction: column; /* Botones uno debajo del otro */
+            gap: 15px;              /* Separación entre un botón y otro */
+            width: 100%;
+            max-width: 300px;       /* Evita que los botones sean gigantes en ordenador */
+        }
+        
+        /* Opcional: Para asegurar que el título se ve bien */
+        .logo-gigante {
+            margin: 0;
+            font-size: 4rem;
+            color: white;
+            font-family: 'Playfair Display', serif; /* O la fuente que más te guste */
+            text-align: center;
         }
 
         .btn-crema {
