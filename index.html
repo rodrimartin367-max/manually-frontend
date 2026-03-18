@@ -830,7 +830,7 @@
             }
         }
         async function abrirCategoria(categoria) {
-            navigate('resultados'); // Vamos a la pantalla de resultados
+            navigate('resultados'); 
             document.getElementById('input-busqueda-resultados').value = '';
             document.getElementById('titulo-resultados').innerText = `Categoría: ${categoria}`;
             
@@ -838,12 +838,8 @@
             contenedor.innerHTML = '<p>Buscando...</p>';
 
             try {
-                // Llamamos a la nueva ruta que creaste en el Backend (ProductoController)
                 const respuesta = await fetch(`${API_BASE_URL}/productos/categoria/${categoria}`);
-                
-                if (!respuesta.ok) {
-                    throw new Error("La ruta de categoría no existe en el backend todavía");
-                }
+                if (!respuesta.ok) throw new Error("La ruta de categoría no existe");
                 
                 const productos = await respuesta.json();
                 contenedor.innerHTML = '';
@@ -861,8 +857,10 @@
                     div.style.flexDirection = 'column';
                     
                     let contenidoHtml = '';
+                    // AQUÍ ESTABA EL ERROR: Cambiado a p.imagenUrl
                     if (p.imagenUrl && p.imagenUrl.startsWith('http')) {
-                    contenidoHtml += `<img src="${producto.imagenUrl}" style="width: 100%; height: auto; max-height: 150px; object-fit: contain; border-radius: 5px; margin-bottom: 8px;">`;                    }
+                        contenidoHtml += `<img src="${p.imagenUrl}" style="width: 100%; height: auto; max-height: 150px; object-fit: contain; border-radius: 5px; margin-bottom: 8px;">`;                    
+                    }
                     contenidoHtml += `<strong>${p.nombre}</strong>`;
                     
                     div.innerHTML = contenidoHtml;
@@ -871,7 +869,7 @@
                 });
             } catch (error) { 
                 console.error("Error al abrir categoría:", error); 
-                contenedor.innerHTML = '<p style="color:red;">Error. Revisa que el Backend esté actualizado.</p>';
+                contenedor.innerHTML = '<p style="color:red;">Error al cargar.</p>';
             }
         }
 
@@ -968,7 +966,12 @@
                 const res = await fetch(`${API_BASE_URL}/productos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre: nombre, categoria: categoria, imagenUrl: imagen })
+                    body: JSON.stringify({ 
+                        nombre: nombre, 
+                        categoria: categoria, 
+                        imagenUrl: imagen,
+                        usuario: { id: usuarioActual.id } // ¡Esto es vital para el Panel Admin!
+                    })
                 });
                 if (res.ok) {
                     cerrarModal('modal-crear-producto');
@@ -1267,7 +1270,6 @@
         async function abrirPanelUsuario(id, correo) {
             usuarioAdminSeleccionadoId = id;
             
-            // Verificamos elementos para evitar errores de null
             const titulo = document.getElementById('admin-modal-nombre');
             const contenedor = document.getElementById('admin-lista-contenido');
             if (!titulo || !contenedor) return;
@@ -1277,29 +1279,54 @@
             abrirModal('modal-admin-usuario');
 
             try {
-                // Buscamos comentarios publicados por este usuario
-                const res = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
-                const comentarios = await res.json();
+                // Buscamos Comentarios
+                const resComentarios = await fetch(`${API_BASE_URL}/contenido/comentarios/usuario/${id}`);
+                const comentarios = await resComentarios.json();
+
+                // Buscamos Dispositivos creados (Esto faltaba en tu código)
+                const resProductos = await fetch(`${API_BASE_URL}/productos/usuario/${id}`);
+                const productos = await resProductos.json();
+
                 contenedor.innerHTML = '';
 
-                if(comentarios.length === 0) {
+                if(comentarios.length === 0 && productos.length === 0) {
                     contenedor.innerHTML = '<p style="color:gray; padding: 10px;">Este usuario no tiene aportaciones todavía.</p>';
-                } else {
-                    comentarios.forEach(c => {
-                        const div = document.createElement('div');
-                        div.className = 'admin-content-card';
-                        div.style.display = 'flex';
-                        div.style.justifyContent = 'space-between';
-                        div.style.alignItems = 'center';
-                        div.innerHTML = `
-                            <div style="font-size:0.9rem;"><strong>Foro:</strong> "${c.texto.substring(0,35)}..."</div>
-                            <button class="btn-icon" style="color:var(--rojo-peligro)" onclick="borrarComentarioAdmin(${c.id})">
-                                <span class="material-symbols-outlined">delete</span>
-                            </button>
-                        `;
-                        contenedor.appendChild(div);
-                    });
+                    return;
                 }
+
+                // Pintamos los Dispositivos
+                productos.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'admin-content-card';
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.borderLeft = '4px solid var(--azul-claro)'; 
+                    div.innerHTML = `
+                        <div style="font-size:0.9rem;"><strong>Dispositivo Creado:</strong> ${p.nombre}</div>
+                        <button class="btn-icon" style="color:var(--rojo-peligro)" onclick="borrarProductoAdmin(${p.id})">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    `;
+                    contenedor.appendChild(div);
+                });
+
+                // Pintamos los Comentarios
+                comentarios.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'admin-content-card';
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.innerHTML = `
+                        <div style="font-size:0.9rem;"><strong>Foro:</strong> "${c.texto.substring(0,35)}..."</div>
+                        <button class="btn-icon" style="color:var(--rojo-peligro)" onclick="borrarComentarioAdmin(${c.id})">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    `;
+                    contenedor.appendChild(div);
+                });
+
             } catch (error) { 
                 contenedor.innerHTML = '<p>Error al conectar con el servidor.</p>';
             }
